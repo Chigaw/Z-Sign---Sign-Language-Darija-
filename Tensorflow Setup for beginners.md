@@ -2,7 +2,8 @@
 This is a small guide for beginners to Setup tensorflow on their machines.
 ## Requirements
 - Anaconda
-  In my case I have the version with python 3.9.7, pay attention to which version you're installing because tensorflow is not compatible with all python version (at this point of time the latest python compatible is 3.11 and for tensorflow gpu the latest compatible is 3.10)
+  
+In my case I have the version with python 3.9.7, pay attention to which version you're installing because tensorflow is not compatible with all python version (at this point of time the latest python compatible is 3.11 and for tensorflow gpu the latest compatible is 3.10)
 ## Links
 - [TensorFlow](https://www.tensorflow.org/install/source_windows#cpu)
   And for those who have an NVIDIA GPU you might also need these for a faster training:
