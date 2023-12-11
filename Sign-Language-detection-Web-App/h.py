@@ -54,7 +54,7 @@ st.sidebar.title('Sign Language Detection - English - Darija Morocco ')
 
 
 app_mode = st.sidebar.selectbox('Choose the App mode',
-['About App','Sign Language to Text','Text to sign Language','Speech to sign Language','write words using sign language']
+['About App','Sign Language to Text','Text to sign Language','Speech to sign Language','write words using sign language','Vidoe To Sign Language']
 )
 
 if app_mode =='About App':
@@ -478,5 +478,178 @@ elif app_mode == 'Speech to sign Language':
 
             # display sign language images for Arabic text
             display_Arabic_images(text)
+elif app_mode=='write words using sign language' : 
+    
+    st.title("Choose your language")
+    txt_mode_alph=st.selectbox("Pick one", ["Darija Morroco", "English"])
+    def horofArabSign():
+        st.title('Arabic alphabet')
+        st.subheader('arabic sign language alphabet')
+        st.image('arabicHorof.png')
+        np.set_printoptions(suppress=True)
+        model = load_model("keras_Model.h5", compile=False)
+        class_names = open("labels.txt", "r").readlines()
+            # Capture vidéo à partir de la caméra
+        cap = cv2.VideoCapture(0)
+
+            # Configuration des paramètres de la caméra
+        cap.set(3, 640)  # Largeur de la caméra
+        cap.set(4, 480)  # Hauteur de la caméra
+        st.header('You can test here')
+        st.subheader('Click the button below to activate the camera and start facial recognition.')
+        btn_start_camera = st.button("Activer la caméra")
+
+        if btn_start_camera:
+            st.warning("The camera is activated. To stop, click the 'Stop Camera' button.")
+
+                # Placeholder to display the webcam feed
+            placeholder = st.empty()
+
+                
+
+            while True:
+                    # Capture de la vidéo
+                ret, frame = cap.read()
+
+                    # Resize and preprocess the frame
+                frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
+                frame = np.asarray(frame, dtype=np.float32).reshape(1, 224, 224, 3)
+                frame = (frame / 255.0) 
+
+                    # Predict the model
+                prediction = model.predict(frame)
+                index = np.argmax(prediction)
+                class_name = class_names[index]
+                confidence_score = prediction[0][index]
+                previous_prediction = class_name
+
+                    # Check if the current prediction is different from the previous one
+                if class_name != previous_prediction:
+                        # Display the webcam feed
+                    placeholder.image(frame, channels="BGR", use_column_width=True, output_format="BGR")
+
+                        # Print prediction and confidence score
+                    st.write(class_name[2:], end="")
+                    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+
+                        # Update the previous prediction
+                        
+
+                    # Sleep for a short time to control the frame rate
+                time.sleep(2)
+
+            # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
+        if st.button("Arrêter la caméra"):
+            cap.release()
+
+
+    def horofEnglichSign():
+        st.title('English alphabet ')
+        st.subheader('English sign language alphabet')
+        st.image('1-1.jpg')
+        np.set_printoptions(suppress=True)
+        model = load_model("keras_Model.h5", compile=False)
+        class_names = open("labels.txt", "r").readlines()
+            # Capture vidéo à partir de la caméra
+        cap = cv2.VideoCapture(0)
+
+            # Configuration des paramètres de la caméra
+        cap.set(3, 640)  # Largeur de la caméra
+        cap.set(4, 480)  # Hauteur de la caméra
+        st.header('You can test here')
+        st.subheader('Click the button below to activate the camera and start facial recognition.')
+        btn_start_camera = st.button("Activer la caméra")
+
+        if btn_start_camera:
+            st.warning("The camera is activated. To stop, click the 'Stop Camera' button.")
+                # Placeholder to display the webcam feed
+            placeholder = st.empty()
+
+                
+
+            while True:
+                    # Capture de la vidéo
+                ret, frame = cap.read()
+
+                    # Resize and preprocess the frame
+                frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
+                frame = np.asarray(frame, dtype=np.float32).reshape(1, 224, 224, 3)
+                frame = (frame / 255.0) 
+
+                    # Predict the model
+                prediction = model.predict(frame)
+                index = np.argmax(prediction)
+                class_name = class_names[index]
+                confidence_score = prediction[0][index]
+                previous_prediction = class_name
+
+                    # Check if the current prediction is different from the previous one
+                if class_name != previous_prediction:
+                        # Display the webcam feed
+                    placeholder.image(frame, channels="BGR", use_column_width=True, output_format="BGR")
+
+                        # Print prediction and confidence score
+                    st.write(class_name[2:], end="")
+                    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+
+                        # Update the previous prediction
+                        
+
+                    # Sleep for a short time to control the frame rate
+                time.sleep(2)
+
+            # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
+        if st.button("Arrêter la caméra"):
+            cap.release()
+   
+    
+    
+    
+     # convert text to lowercase
+    if txt_mode_alph=='English' :
+        # display sign language images
+        horofEnglichSign()
+    else:
+        horofArabSign()
+
 else : 
-    st.write("sign letters")
+    st.title('Video To Sign Language')
+    model = load_model("keras_Model.h5", compile=False)
+    class_names = open("labels.txt", "r").readlines()
+    video_file_buffer = st.file_uploader("Upload a video", type=["mp4", "mov", 'avi', 'asf', 'm4v'])
+
+    if video_file_buffer is not None:
+        tfflie = tempfile.NamedTemporaryFile(delete=False)
+        tfflie.write(video_file_buffer.read())
+        cap = cv2.VideoCapture(tfflie.name)
+        cap.set(3, 640)  # Largeur de la caméra
+        cap.set(4, 480)  # Hauteur de la caméra
+        placeholder = st.empty()
+
+        while True:
+            # Capture de la vidéo
+            ret, frame = cap.read()
+
+            # Resize and preprocess the frame
+            frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
+            frame = np.asarray(frame, dtype=np.float32).reshape(1, 224, 224, 3)
+            frame = (frame / 255.0)
+
+            # Predict the model
+            prediction = model.predict(frame)
+            index = np.argmax(prediction)
+            class_name = class_names[index]
+
+            # Display the webcam feed
+            placeholder.image(frame, channels="BGR", use_column_width=True, output_format="BGR")
+
+            # Print prediction
+            st.write(class_name[2:], end=" ")
+
+            # Sleep for a short time to control the frame rate
+            time.sleep(0.1)
+
+            # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
+    else:
+        st.warning("Please upload a video file.")
+        
