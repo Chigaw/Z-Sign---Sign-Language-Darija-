@@ -1,5 +1,7 @@
+import json
 import pickle
 import threading
+import requests
 import streamlit as st
 import mediapipe as mp
 import cv2
@@ -9,7 +11,7 @@ import time
 from PIL import Image
 import os
 import speech_recognition as sr
-
+from streamlit_lottie import st_lottie
 from keras.models import load_model  # TensorFlow is required for Keras to work
 
 st.set_page_config(page_title="Zsign",page_icon='ZsignLogo-removebg-preview.png',layout="wide")
@@ -17,9 +19,17 @@ mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
 mp_draw = mp.solutions.drawing_utils
 
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
-DEMO_VIDEO = 'demo.mp4'
-DEMO_IMAGE = 'demo.jpg'
+def load_lottiefile(filepath: str):
+    with open(filepath, "r") as f:
+        return json.load(f)
+
+
 
 my_list = [] 
 
@@ -61,14 +71,15 @@ app_mode = st.sidebar.selectbox('Choose the App mode',
 
 if app_mode =='About App':
 
-    t1, t2 = st.columns((0.4,1)) 
-    t1.image(resiezeImage(logo,200,200))
-    t2.title('Zsign : Sign Language Detection - English - Darija Morocco ')
-        
+     
+    #t1.image(resiezeImage(logo,200,200))
+    st.title('Zsign : Sign Language Detection - English - Darija Morocco ')
+    #st.markdown('<h1 ">Zsign : Sign Language Detection - English - Darija Morocco</h1>', unsafe_allow_html=True)
+
     
     
   
-    st.markdown('To facilitate more inclusive and barrier-free communication between hearing and deaf individuals, contributing to a more equitable and understanding society.')
+    st.markdown('<p style="font-size: 25px;">To facilitate more inclusive and barrier-free communication between hearing and deaf individuals, contributing to a more equitable and understanding society.</p>', unsafe_allow_html=True)
 
 
     st.markdown(
@@ -85,104 +96,76 @@ if app_mode =='About App':
     """,
     unsafe_allow_html=True,
     )
+    video_path = 'production_id_5211959 (2160p).mp4'
+ 
+# Utilisez st.video pour afficher la vidéo
+    st.video(video_path)
+    lottie_coding = load_lottiefile('aboutApp.json')
+    t1,t2=st.columns(2)
+    with t1:
+        st.markdown('<h1 style="color:#FCAEAE;">About App</h1>', unsafe_allow_html=True)
+        st.write("##")
+        st.write(
+            """
+            Welcome to our innovative Sign Language Translation App :
+            - our application excels in translating sign language gestures into both English and Moroccan Darija text.
+            - dedicated to bridging the communication gap between Moroccan Darija and English! Leveraging the power of Python, TensorFlow, and MediaPipe
+            - Our app's versatility extends to translating written text in both languages into corresponding sign language gestures, fostering inclusivity and breaking language barriers
+            - Embracing SpeechRecognition technology, we empower vocal translations into sign language, facilitating seamless spoken communication representation visually.
+            - Sign into Text and Video into Text
+
+            """
+        )
+        st.write("[For more information Explore Our GitHup Repository ](https://github.com/Chigaw/Z-Sign---Sign-Language-Darija-/blob/main/Tensorflow%20Setup%20for%20beginners.md)")
+    with t2:
+        st_lottie(lottie_coding, height=600, key="coding")
     
-    aboutAs='about.png'
-    t3, t4 = st.columns((0.2,1)) 
-    t3.image(resiezeImage(aboutAs,100,100))
-    t4.markdown('''# About As \n ''')
-    st.markdown(''' 
-                The "Zsign" application is an interactive platform designed to facilitate communication between hearing and deaf individuals by interpreting gestures and signs in English and Darija(MOROCCO) Sign Language . Equipped with intelligent image processing and gesture recognition features, the application enables smooth and natural communication. 
-                Also check me out on Social Media
-                ''')
-    t5, t6 = st.columns((0.2,1)) 
-    keyFertures='keyfetures.png'
-    t5.image(resiezeImage(keyFertures,80,80))
-    t6.markdown('''# Key Features: \n ''')
-    st.markdown('''
-                - An intuitive user interface with visual instructions to guide users.
-                - Uses a camera to detect gestures and signs made by the user.
-                - Incorporates sign recognition algorithms to interpret gestures in  Sign Language.
-                - Converts detected signs into displayed text and/or vocal output for bidirectional communication.
-                
-                ''')
-    t7, t8 = st.columns((0.2,1)) 
-    target='target.png'
-    t7.image(target,100,100)
-    t8.markdown('''# Target Users \n ''')
-    st.markdown('''
-                - Deaf or hard-of-hearing individuals.
-                - Friends, family members, or colleagues of deaf or hard-of-hearing individuals.
-                ''')
+    t5,t6=st.columns(2)
+    features=load_lottiefile('key1.json')
+    with t5:
+        st.markdown('<h1 style="color:#AAC8A7;">Key Features</h1>', unsafe_allow_html=True)
+        st.write("##")
+        st.write(
+            """
+            - An intuitive user interface with visual instructions to guide users.
+            - Uses a camera to detect gestures and signs made by the user.
+            - Incorporates sign recognition algorithms to interpret gestures in  Sign Language.
+            - Converts detected signs into displayed text and/or vocal output for bidirectional communication.
+            """
+        )
+    with t6:
+        st_lottie(features, height=400, key="features") 
+
+    t7, t8 = st.columns(2) 
+    
+    features1=load_lottiefile('fetures.json')
+    with t7:
+        st.markdown('<h1 style="color:#FF6464;">Target Users</h1>', unsafe_allow_html=True)
+        st.write("##")
+        st.write(
+            """
+            - Deaf or hard-of-hearing individuals.
+            - Friends, family members, or colleagues of deaf or hard-of-hearing individuals .
+            - Educational Institutions .
+            - organizations dedicated to deaf and mute individuals . 
+            - Healthcare Professionals, such as doctors, nurses, therapists, and caregivers .
+            - Professional Organizations . 
+            """
+        )
+    with t8:
+        st_lottie(features1, height=400, key="features1")
 elif app_mode == 'Sign Language to Text':
-    t9, t10 = st.columns((0.4,1)) 
-    t9.image(resiezeImage(logo,200,200))
-    t10.title("Sign Language to Text")
+   
+    st.title("Sign Language to Text")
     st.header('Choose the language')
     langage_mode=st.selectbox("Pick one", ["Darija Morroco", "English"])
     
    
-    def AEnglishSign():
-        st.title('English Sign Language')
-        np.set_printoptions(suppress=True)
-        model = load_model("keras_Model.h5", compile=False)
-        class_names = open("labels.txt", "r").readlines()
-
-        # Capture vidéo à partir de la caméra
-        cap = cv2.VideoCapture(0)
-
-        # Configuration des paramètres de la caméra
-        cap.set(3, 320)  # Set width to 320
-        cap.set(4, 240)  # Hauteur de la caméra
-
-        st.subheader('Click the button below to activate the camera and start facial recognition.')
-        btn_start_camera = st.button("Activate Camera")
-
-        if btn_start_camera:
-            st.warning("The camera is activated. To stop, click on the 'Stop Camera' button.")
-
-            # Placeholder to display the webcam feed
-            placeholder = st.empty()
-
-            while True:
-                # Capture de la vidéo
-                ret, frame = cap.read()
-
-                # Resize and preprocess the frame
-                frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
-                frame = np.asarray(frame, dtype=np.float32).reshape(1, 224, 224, 3)
-                frame = (frame / 255.0) 
-
-                # Predict the model
-                prediction = model.predict(frame)
-                index = np.argmax(prediction)
-                class_name = class_names[index]
-                confidence_score = prediction[0][index]
-                previous_prediction = class_name
-
-                # Check if the current prediction is different from the previous one
-                if class_name != previous_prediction:
-                    # Display the webcam feed
-                    #placeholder.image(frame, channels="BGR", use_column_width=True, output_format="BGR")
-                    placeholder.image(frame, channels="BGR", use_container_width=True, output_format="BGR")
-
-                    # Print prediction and confidence score
-                    st.write(class_name[2:], end="")
-                    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
-
-                    # Update the previous prediction
-
-                # Sleep for a short time to control the frame rate
-                time.sleep(0.1)
-        # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
-        if st.button("Arrêter la caméra"):
-            cap.release()
     def EnglishSign():
-        # st.title('Arabic alphabet')
-        # st.subheader('arabic sign language alphabet')
-        # st.image('arabicHorof.png')
-        st.title('English alphabet ')
-        st.subheader('English sign language alphabet')
-        # st.image('1-1.jpg')
+    
+        
+        st.title('English sign language ')
+
         np.set_printoptions(suppress=True)
         model_dict = pickle.load(open('C:\\Users\\DELL\\Desktop\\Z-Sign---Sign-Language-Darija-\\Sign-Language-detection-Web-App\\data_words.pickle', 'rb'))
         model = model_dict['model']
@@ -191,8 +174,8 @@ elif app_mode == 'Sign Language to Text':
         cap.set(3, 320)  # Set width to 320
         cap.set(4, 240) 
 
-        st.subheader('Click the button below to activate the camera and start facial recognition.')
-        btn_start_camera = st.button("Activer la caméra")
+        st.subheader('Click the button below to activate the camera.')
+        btn_start_camera = st.button("Activate the camera")
 
         # Initialize MediaPipe Hands
         mp_hands = mp.solutions.hands
@@ -203,7 +186,7 @@ elif app_mode == 'Sign Language to Text':
         labels_dict = {0: 'hello', 1: 'our goal', 2: 'is to help', 3: 'deaf people'}
 
         if btn_start_camera:
-            st.warning("La caméra est activée. Pour arrêter, cliquez sur le bouton 'Arrêter la caméra'.")
+            st.warning("The camera is activated. To stop, click on the 'Stop Camera' button.")
             current_word = ""
             cooldown_start_time = time.time()
             cooldown_duration = 2.0  # Set the cooldown duration in seconds
@@ -262,16 +245,12 @@ elif app_mode == 'Sign Language to Text':
                                 cv2.LINE_AA)
 
             # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
-        if st.button("Arrêter la caméra"):
+        if st.button("Stop camera"):
             cap.release()
 
     def DarijaSign():
-          # st.title('Arabic alphabet')
-                # st.subheader('arabic sign language alphabet')
-                # st.image('arabicHorof.png')
-                # st.title('English alphabet ')
-                st.subheader('English sign language')
-                # st.image('1-1.jpg')
+
+                st.subheader('Darija sign language')
                 np.set_printoptions(suppress=True)
                 model_dict = pickle.load(open('C:\\Users\\DELL\\Desktop\\Z-Sign---Sign-Language-Darija-\\Sign-Language-detection-Web-App\\data_words.pickle', 'rb'))
                 model = model_dict['model']
@@ -280,8 +259,8 @@ elif app_mode == 'Sign Language to Text':
                 cap.set(3, 320)  # Set width to 320
                 cap.set(4, 240) 
 
-                st.subheader('Click the button below to activate the camera and start facial recognition.')
-                btn_start_camera = st.button("Activer la caméra")
+                st.subheader('Click the button below to activate the camera.')
+                btn_start_camera = st.button("Activate the camera")
 
                 # Initialize MediaPipe Hands
                 mp_hands = mp.solutions.hands
@@ -292,7 +271,7 @@ elif app_mode == 'Sign Language to Text':
                 labels_dict = {0: 'سلام', 1: 'الهدف ديالنا', 2: 'نعاونو', 3: 'الناس لمكتسمعش'}
 
                 if btn_start_camera:
-                    st.warning("La caméra est activée. Pour arrêter, cliquez sur le bouton 'Arrêter la caméra'.")
+                    st.warning("The camera is activated. To stop, click on the 'Stop Camera' button.")
                     current_word = ""
                     cooldown_start_time = time.time()
                     cooldown_duration = 2.0  # Set the cooldown duration in seconds
@@ -351,12 +330,8 @@ elif app_mode == 'Sign Language to Text':
                                         cv2.LINE_AA)
 
                     # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
-                if st.button("Arrêter la caméra"):
+                if st.button("Stop camera"):
                     cap.release()          
-
-            # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
-        # if st.button("Arrêter la caméra"):
-        #     cap.release()
 
     if langage_mode=='Darija Morroco' : 
         DarijaSign()
@@ -364,8 +339,7 @@ elif app_mode == 'Sign Language to Text':
     elif langage_mode=='English':
         EnglishSign()
 
-            
-
+        
 
 elif app_mode == 'Text to sign Language':
 
@@ -607,12 +581,10 @@ elif app_mode=='write words using sign language' :
     txt_mode_alph=st.selectbox("Pick one", ["Darija Morroco", "English"])
 
     def horofenglishSign():
-        # st.title('Arabic alphabet')
-        # st.subheader('arabic sign language alphabet')
-        # st.image('arabicHorof.png')
+
         st.title('English alphabet ')
         st.subheader('English sign language alphabet')
-        st.image('1-1.jpg')
+        st.image('_American Sign Language ASL Alphabet_ Photographic Print for Sale by SteamerTees.jpeg')
         np.set_printoptions(suppress=True)
         model_dict = pickle.load(open('C:\\Users\\DELL\\Desktop\\Z-Sign---Sign-Language-Darija-\\Sign-Language-detection-Web-App\\data_anglais.pickle', 'rb'))
         model = model_dict['model']
@@ -622,7 +594,7 @@ elif app_mode=='write words using sign language' :
         cap.set(4, 240) 
 
         st.subheader('Click the button below to activate the camera and start facial recognition.')
-        btn_start_camera = st.button("Activer la caméra")
+        btn_start_camera = st.button("Activate camera")
 
         # Initialize MediaPipe Hands
         mp_hands = mp.solutions.hands
@@ -633,7 +605,7 @@ elif app_mode=='write words using sign language' :
         labels_dict = {0: 'H', 1: 'E', 2: 'L', 3: 'L', 4: 'O'}
 
         if btn_start_camera:
-            st.warning("La caméra est activée. Pour arrêter, cliquez sur le bouton 'Arrêter la caméra'.")
+            st.warning("The camera is activated. To stop, click on the 'Stop Camera' button.")
             current_word = ""
             cooldown_start_time = time.time()
             cooldown_duration = 2.0  # Set the cooldown duration in seconds
@@ -694,15 +666,15 @@ elif app_mode=='write words using sign language' :
                                 cv2.LINE_AA)
 
             # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
-        if st.button("Arrêter la caméra"):
+        if st.button("Stop camera"):
             cap.release()
 
 
     def horofarabicSign():
             st.title('Arabic alphabet')
             st.subheader('arabic sign language alphabet')
-            st.image('arabicHorof1.jpg')
-            np.set_printoptions(suppress=True)
+            image_path = 'arabicHorof1.jpg'
+            resized_image = st.image(image_path, width=400)
             model_dict = pickle.load(open('C:\\Users\\DELL\\Desktop\\Z-Sign---Sign-Language-Darija-\\Sign-Language-detection-Web-App\\data_arab.pickle', 'rb'))
             model = model_dict['model']
 
@@ -711,7 +683,7 @@ elif app_mode=='write words using sign language' :
             cap.set(4, 240) 
 
             st.subheader('Click the button below to activate the camera and start facial recognition.')
-            btn_start_camera = st.button("Activer la caméra")
+            btn_start_camera = st.button("Activate camera")
 
             # Initialize MediaPipe Hands
             mp_hands = mp.solutions.hands
@@ -722,7 +694,7 @@ elif app_mode=='write words using sign language' :
             labels_dict = {0: 'ا', 1: 'ب', 2: 'ت', 3: 'ث', 4: 'ج', 5: 'ح', 6: 'خ', 7: 'د', 8: 'ذ', 9: 'ر'}
 
             if btn_start_camera:
-                st.warning("La caméra est activée. Pour arrêter, cliquez sur le bouton 'Arrêter la caméra'.")
+                st.warning("The camera is activated. To stop, click on the 'Stop Camera' button.")
                 current_word = ""
                 cooldown_start_time = time.time()
                 cooldown_duration = 2.0  # Set the cooldown duration in seconds
@@ -781,7 +753,7 @@ elif app_mode=='write words using sign language' :
                                     cv2.LINE_AA)
 
                 # Arrêter la capture vidéo lorsque l'utilisateur clique sur "Arrêter la caméra"
-            if st.button("Arrêter la caméra"):
+            if st.button("Stop camera"):
                 cap.release()
     
     
