@@ -13,6 +13,7 @@ import os
 import speech_recognition as sr
 from streamlit_lottie import st_lottie
 from keras.models import load_model  # TensorFlow is required for Keras to work
+from streamlit_option_menu import option_menu
 
 st.set_page_config(page_title="Zsign",page_icon='ZsignLogo-removebg-preview.png',layout="wide")
 mp_hands = mp.solutions.hands
@@ -29,7 +30,20 @@ def load_lottiefile(filepath: str):
     with open(filepath, "r") as f:
         return json.load(f)
 
-
+app_mode = option_menu(
+        menu_title=None,
+        options=["About App", "Sign to Text", "Text to sign", "Speech to sign", "write words", "Video To Sign"],
+        icons=["house", "justify", "chat", "cassette", "file-earmark-word", ""],
+        menu_icon="cast",
+        default_index=0,
+        orientation="horizontal",
+        styles={
+            "container": {"padding": "0!important"},
+            "icon": {"color": "#683db7", "font-size": "25px"},
+            "nav-link-selected": {"background-color": "#537cd5"},
+            "option":{"color":"black"}
+        },
+    )
 
 my_list = [] 
 
@@ -60,7 +74,7 @@ def resiezeImage(img,new_width,new_height) :
 
 
 logo='ZsignLogo-removebg-preview.png'
-st.sidebar.image(resiezeImage(logo,300,250))
+st.sidebar.image(resiezeImage(logo,300,230))
 st.sidebar.title('Sign Language Detection - English - Darija Morocco ')
 
 
@@ -73,7 +87,8 @@ if app_mode =='About App':
 
      
     #t1.image(resiezeImage(logo,200,200))
-    st.title('Zsign : Sign Language Detection - English - Darija Morocco ')
+    #st.title('Zsign : Sign Language Detection - English - Darija Morocco ')
+    st.markdown("<h1 style='text-align: center;color:#865DFF;'>Z-sign : Sign Language Detection - English - Darija Morocco </h1>", unsafe_allow_html=True)
     #st.markdown('<h1 ">Zsign : Sign Language Detection - English - Darija Morocco</h1>', unsafe_allow_html=True)
 
     
@@ -155,7 +170,7 @@ if app_mode =='About App':
     with t8:
         st_lottie(features1, height=400, key="features1")
 elif app_mode == 'Sign Language to Text':
-   
+    #st.markdown("<h1 style='text-align: center;'>Z-sign : Sign Language Detection - English - Darija Morocco </h1>", unsafe_allow_html=True)   
     st.title("Sign Language to Text")
     st.header('Choose the language')
     langage_mode=st.selectbox("Pick one", ["Darija Morroco", "English"])
@@ -342,7 +357,7 @@ elif app_mode == 'Sign Language to Text':
         
 
 elif app_mode == 'Text to sign Language':
-
+    #st.markdown("<h1 style='text-align: center;'>Z-sign : Sign Language Detection - English - Darija Morocco </h1>", unsafe_allow_html=True)
     st.title('Text to Sign Language ')
     st.header('Converting text to sign language involves translating written text into corresponding signs or gestures in a sign language system')
     st.subheader('Choose the language')
@@ -443,6 +458,7 @@ elif app_mode == 'Text to sign Language':
         DarijaText()
         
 elif app_mode == 'Speech to sign Language':
+    #st.markdown("<h1 style='text-align: center;'>Z-sign : Sign Language Detection - English - Darija Morocco </h1>", unsafe_allow_html=True)
     st.title('Speech to Sign Language ')
     # initialize the speech recognition engine
     # initialize the speech recognition engine
@@ -576,7 +592,7 @@ elif app_mode == 'Speech to sign Language':
             # display sign language images for Arabic text
             display_Arabic_images(text)
 elif app_mode=='write words using sign language' : 
-    
+    #st.markdown("<h1 style='text-align: center;'>Z-sign : Sign Language Detection - English - Darija Morocco </h1>", unsafe_allow_html=True)
     st.title("Choose your language")
     txt_mode_alph=st.selectbox("Pick one", ["Darija Morroco", "English"])
 
@@ -766,6 +782,7 @@ elif app_mode=='write words using sign language' :
         horofarabicSign()
 
 else : 
+    #st.markdown("<h1 style='text-align: center;'>Z-sign : Sign Language Detection - English - Darija Morocco </h1>", unsafe_allow_html=True)
     st.title('Video To Sign Language')
     model = load_model("keras_Model.h5", compile=False)
     class_names = open("labels.txt", "r").readlines()
